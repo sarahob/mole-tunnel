@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { updatePosition } from "./handleUserInput";
 
 enum DigStatus {
   EMPTY = 0,
@@ -33,11 +34,35 @@ const Canvas = (props: any) => {
     return map;
   }
 
+  const [playerPos, setPlayerPos] = useState({x: 0, y: 0});
+  const playerPosRef = useRef({x:0, y:0});
+
   const [grid, setGrid] = useState<GridSquare[]>([]);
 
   useEffect(() => {
     setGrid(initializeMap());
+    // // listen for user input
+    document.addEventListener('keydown', handleUserInput);
   }, []);
+
+  const handleUserInput = (event: KeyboardEvent) => {
+    console.log('handle user input', playerPos);
+    const updatedPos = updatePosition(event, playerPosRef.current);
+    setPlayerPos(updatedPos);
+    playerPosRef.current = updatedPos; 
+  }
+
+  const drawPlayer = (context: any, centerX: number, centerY: number) => {
+    const radius = 5;
+    context.fillStyle = '#7B3F00';
+    context.beginPath();
+    context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    context.fill();
+    context.lineWidth = 1;
+    context.strokeStyle = '#003300';
+    context.stroke();
+  }
+
 
   useEffect(() => {
     const drawMap = (context: any) => {
@@ -51,17 +76,7 @@ const Canvas = (props: any) => {
       }
     }
 
-    const drawPlayer = (context: any, centerX: number, centerY: number) => {
-      const radius = 5;
-      context.fillStyle = '#7B3F00';
-      context.beginPath();
-      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-      context.fill();
-      context.lineWidth = 1;
-      context.strokeStyle = '#003300';
-      context.stroke();
-    }
-
+    console.log('render');
     const canvas: any = canvasRef.current;
     if (!canvas) {
       throw new Error('no canvas!');
@@ -73,8 +88,27 @@ const Canvas = (props: any) => {
     drawMap(context);
     drawPlayer(context, 55, 55);
   }, [grid]);
+ 
 
-  return <canvas ref={canvasRef} {...props} />;
+  useEffect(() => {
+    console.log('render after position update', playerPos);
+    const canvas: any = canvasRef.current;
+    if (!canvas) {
+      throw new Error('no canvas!');
+    }
+    const context = canvas.getContext("2d");
+    drawPlayer(context, playerPos.x, playerPos.y);
+
+
+    
+  }, [playerPos]);
+
+  return <>
+  <p>X: {playerPos.x}</p>
+  <p>Y: {playerPos.y}</p>
+  <canvas ref={canvasRef} {...props}></canvas>
+  </>
+
 };
 
 export default Canvas;
