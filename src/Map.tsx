@@ -41,6 +41,7 @@ const Canvas = (props: any) => {
 
   useEffect(() => {
     const drawMap = (context: any) => {
+      context.lineWidth = 1;
       for (const square of grid) {
         if (square.digStatus === FULL) {
           context.rect(square.x * 10, square.y * 10, 10, 10)
@@ -48,6 +49,17 @@ const Canvas = (props: any) => {
           context.stroke();
         }
       }
+    }
+
+    const drawPlayer = (context: any, centerX: number, centerY: number) => {
+      const radius = 5;
+      context.fillStyle = '#7B3F00';
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+      context.fill();
+      context.lineWidth = 1;
+      context.strokeStyle = '#003300';
+      context.stroke();
     }
 
     const canvas: any = canvasRef.current;
@@ -59,6 +71,7 @@ const Canvas = (props: any) => {
     context.fillStyle = "#000000";
     context.strokeStyle = "#202020"
     drawMap(context);
+    drawPlayer(context, 55, 55);
   }, [grid]);
 
   return <canvas ref={canvasRef} {...props} />;
