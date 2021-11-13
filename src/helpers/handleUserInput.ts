@@ -1,9 +1,5 @@
-export enum InputKeys {
-    ARROW_UP = 'ArrowUp',
-    ARROW_DOWN = 'ArrowDown',
-    ARROW_RIGHT = 'ArrowRight',
-    ARROW_LEFT = 'ArrowLeft'
-}
+import { InputKeys } from "../models/InputKeys";
+
 
 export const updatePosition = (event: KeyboardEvent, currentPos:{x:number, y:number}) => {
 
